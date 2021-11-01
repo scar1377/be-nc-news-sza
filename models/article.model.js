@@ -37,7 +37,9 @@ exports.updateArticleById = async (article_id, updatedArticle) => {
 //   LEFT JOIN users
 //   ON articles.author = users.username
 //   LEFT JOIN comments
-//   ON
+//   ON articles.comments_count = comments.
+//   COUNT(*) AS comments_count
+//   FROM comments WHERE article_id = $1
 //   `;
 
 //   const { rows } = await db.query(query);
