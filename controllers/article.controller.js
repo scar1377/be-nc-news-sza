@@ -1,9 +1,9 @@
 const {
-  selectSingleArticle,
+  selectArticleById,
   selectArticles,
 } = require("../models/article.model");
 
-exports.getSingleArticle = (req, res, next) => {
+exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
   selectSingleArticle(article_id)
     .then((article) => {

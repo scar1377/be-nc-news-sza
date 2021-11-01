@@ -85,7 +85,7 @@ describe("app", () => {
     });
   });
 
-  describe.skip("/api/articles/:article_id", () => {
+  describe("/api/articles/:article_id", () => {
     test("GET, status:200 responds with a single matching article", () => {
       return request(app)
         .get("/api/articles/5")
@@ -97,12 +97,12 @@ describe("app", () => {
             topic: "cats",
             author: "rogersop",
             body: "Bastet walks amongst us, and the cats are taking arms!",
-            created_at: new Date(1596464040000),
+            created_at: "2020-08-03T13:14:00.000Z",
             votes: 0,
           });
         });
     });
-    test("PATCH, status:200 responds with the updated article", () => {
+    test.skip("PATCH, status:200 responds with the updated article", () => {
       const voteUpdates = { inc_votes: 7 };
       return request(app)
         .patch("/api/articles/5")
@@ -115,7 +115,7 @@ describe("app", () => {
             topic: "cats",
             author: "rogersop",
             body: "Bastet walks amongst us, and the cats are taking arms!",
-            created_at: new Date(1596464040000),
+            created_at: "2020-08-03T13:14:00.000Z",
             votes: 7,
           });
         });
