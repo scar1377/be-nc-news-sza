@@ -102,8 +102,8 @@ describe("app", () => {
           });
         });
     });
-    test.skip("PATCH, status:200 responds with the updated article", () => {
-      const voteUpdates = { inc_votes: 7 };
+    test("PATCH, status:200 responds with the updated article", () => {
+      const voteUpdates = { votes: -27 };
       return request(app)
         .patch("/api/articles/5")
         .send(voteUpdates)
@@ -116,7 +116,7 @@ describe("app", () => {
             author: "rogersop",
             body: "Bastet walks amongst us, and the cats are taking arms!",
             created_at: "2020-08-03T13:14:00.000Z",
-            votes: 7,
+            votes: -27,
           });
         });
     });
