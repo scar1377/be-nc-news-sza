@@ -32,7 +32,7 @@ const seed = (data) => {
                   article_id SERIAL PRIMARY KEY,
                   title VARCHAR,
                   body VARCHAR,
-                  votes INT,
+                  votes INT DEFAULT 0,
                   topic VARCHAR REFERENCES topics(slug),
                   author VARCHAR REFERENCES users(username) NOT NULL,
                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -45,7 +45,7 @@ const seed = (data) => {
                   comment_id SERIAL PRIMARY KEY,
                   author VARCHAR REFERENCES users(username),
                   article_id INT REFERENCES articles(article_id) NOT NULL,
-                  votes INT,
+                  votes INT DEFAULT 0,
                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                   body VARCHAR
                 )`
@@ -76,7 +76,6 @@ const seed = (data) => {
               `INSERT INTO articles(
                 title,
                 body,
-                votes,
                 topic,
                 author)
             VALUES %L;`,
@@ -84,7 +83,6 @@ const seed = (data) => {
                 return [
                   article.title,
                   article.body,
-                  (article.votes = 0),
                   article.topic,
                   article.author,
                   // article.created_at,
@@ -98,17 +96,10 @@ const seed = (data) => {
               `INSERT INTO comments(
                 author,
                 article_id,
-                votes,
                 body)
             VALUES %L;`,
               commentData.map((comment) => {
-                return [
-                  comment.author,
-                  comment.article_id,
-                  (comment.votes = 0),
-                  //  comment.created_at,
-                  comment.body,
-                ];
+                return [comment.author, comment.article_id, comment.body];
               })
             );
             return db.query(queryStr);
