@@ -3,7 +3,6 @@ const {
   selectArticles,
   updateArticleById,
 } = require("../models/article.model");
-const articlesRouter = require("../routes/articles-router");
 
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;

@@ -86,7 +86,7 @@ describe("app", () => {
   });
 
   describe("/api/articles/:article_id", () => {
-    test("GET, status:200 responds with a single matching article", () => {
+    test.only("GET, status:200 responds with a single matching article", () => {
       return request(app)
         .get("/api/articles/5")
         .expect(200)
@@ -100,6 +100,14 @@ describe("app", () => {
             created_at: "2020-08-03T13:14:00.000Z",
             votes: 0,
           });
+        });
+    });
+    test.only("GET status:404 responds with an error message", () => {
+      return request(app)
+        .get("/api/articles/9999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("article does not exist");
         });
     });
     test("PATCH, status:200 responds with the updated article", () => {
