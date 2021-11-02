@@ -53,40 +53,8 @@ describe("app", () => {
     });
   });
 
-  describe.skip("GET /api/articles", () => {
-    test("status:200 responds with an array of article objects, each of which should have 'author', 'title', 'article_id', 'topic', 'created_at','votes' and 'comment_count' properties", () => {
-      return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.articles.length).toBe(3);
-          body.articles.forEach((article) => {
-            expect(article).toEqual(
-              expect.objectContaining({
-                author: expect.any(String),
-                title: expect.any(String),
-                article_id: expect.any(Number),
-                topic: expect.any(String),
-                created_at: expect.any(Date),
-                votes: expect.any(Number),
-                comment_count: expect.any(Number),
-              })
-            );
-          });
-        });
-    });
-    test("status:404 responds with an error message", () => {
-      return request(app)
-        .get("/api/article")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("path not found");
-        });
-    });
-  });
-
-  describe("/api/articles/:article_id", () => {
-    test.only("GET, status:200 responds with a single matching article", () => {
+  describe("GET /api/articles/:article_id", () => {
+    test("GET, status:200 responds with a single matching article", () => {
       return request(app)
         .get("/api/articles/5")
         .expect(200)
@@ -110,14 +78,16 @@ describe("app", () => {
           expect(body.msg).toBe("article does not exist");
         });
     });
-    test.only("GET status:400 responds with an error message", () => {
+    test("GET status:400 responds with an error message", () => {
       return request(app)
         .get("/api/articles/not-an-id")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Invalid ID");
+          expect(body.msg).toBe("Invalid input");
         });
     });
+  });
+  describe("PATCH /api/articles/:article_id", () => {
     test("PATCH, status:200 responds with the updated article", () => {
       const voteUpdates = { inc_votes: -27 };
       return request(app)
@@ -154,6 +124,37 @@ describe("app", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("missing required fields");
+        });
+    });
+  });
+  describe("GET /api/articles", () => {
+    test("status:200 responds with an array of article objects, each of which should have 'author', 'title', 'article_id', 'topic', 'created_at','votes' and 'comment_count' properties", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).toBe(3);
+          body.articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(Date),
+                votes: expect.any(Number),
+                comment_count: expect.any(Number),
+              })
+            );
+          });
+        });
+    });
+    test("status:404 responds with an error message", () => {
+      return request(app)
+        .get("/api/article")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("path not found");
         });
     });
   });

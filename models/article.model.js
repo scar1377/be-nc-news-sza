@@ -1,12 +1,12 @@
 const db = require("../db/connection");
 
 exports.selectArticleById = async (article_id) => {
-  if (typeof article_id !== "number") {
-    return Promise.reject({
-      status: 400,
-      msg: "Invalid ID",
-    });
-  }
+  //   if (typeof article_id !== "number") {
+  //     return Promise.reject({
+  //       status: 400,
+  //       msg: "Invalid ID",
+  //     });
+  //   }
   const query = "SELECT * FROM articles WHERE article_id = $1;";
   const { rows } = await db.query(query, [article_id]);
   if (rows.length === 0) {
