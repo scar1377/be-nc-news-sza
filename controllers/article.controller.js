@@ -10,10 +10,7 @@ exports.getArticleById = (req, res, next) => {
     .then((article) => {
       res.status(200).send({ article });
     })
-    .catch((err) => {
-      console.log(err, "<<<<<<<<<<<<<<<<<in controller catch err");
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.patchArticleById = (req, res, next) => {

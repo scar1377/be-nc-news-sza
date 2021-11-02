@@ -36,7 +36,7 @@ const seed = (data) => {
                   votes INT DEFAULT 0,
                   topic VARCHAR REFERENCES topics(slug),
                   author VARCHAR REFERENCES users(username) NOT NULL,
-                  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
                 );`
               );
             })
@@ -47,7 +47,7 @@ const seed = (data) => {
                   author VARCHAR REFERENCES users(username),
                   article_id INT REFERENCES articles(article_id) NOT NULL,
                   votes INT DEFAULT 0,
-                  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                  created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
                   body VARCHAR
                 )`
               );

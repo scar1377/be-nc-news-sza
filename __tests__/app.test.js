@@ -65,9 +65,31 @@ describe("app", () => {
             topic: "cats",
             author: "rogersop",
             body: "Bastet walks amongst us, and the cats are taking arms!",
-            created_at: "2020-08-03T13:14:00.000Z",
+            created_at: "2020-08-03T14:14:00.000Z",
             votes: 0,
+            comment_counts: 2,
           });
+
+          //   expect(body.article).toEqual(
+          //     expect.objectContaining({
+          //       author: expect.any(String),
+          //       title: expect.any(String),
+          //       article_id: expect.any(Number),
+          //       topic: expect.any(String),
+          //       created_at: expect.any(Date),
+          //       votes: expect.any(Number),
+          //       comment_count: expect.any(Number),
+          //     })
+          //   );
+
+          //   expect(body.article).toEqual({
+          //     article_id: 5,
+          //     title: "UNCOVERED: catspiracy to bring down democracy",
+          //     topic: "cats",
+          //     author: "rogersop",
+          //     created_at: new Date(1596464040000),
+          //     votes: 0,
+          //   });
         });
     });
     test("GET status:404 responds with an error message", () => {
@@ -101,7 +123,7 @@ describe("app", () => {
             topic: "cats",
             author: "rogersop",
             body: "Bastet walks amongst us, and the cats are taking arms!",
-            created_at: "2020-08-03T13:14:00.000Z",
+            created_at: "2020-08-03T14:14:00.000Z",
             votes: -27,
           });
         });
@@ -113,7 +135,7 @@ describe("app", () => {
         .send(voteUpdates)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("missing required fields");
+          expect(body.msg).toBe("incorrect type");
         });
     });
     test("PATCH status:400 responds with an error message", () => {
@@ -126,14 +148,24 @@ describe("app", () => {
           expect(body.msg).toBe("missing required fields");
         });
     });
+    test("PATCH status:400 responds with an error message", () => {
+      const voteUpdates = { inc_votes: 1, name: "Mitch" };
+      return request(app)
+        .patch("/api/articles/5")
+        .send(voteUpdates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("multiply updates");
+        });
+    });
   });
   describe("GET /api/articles", () => {
-    test("status:200 responds with an array of article objects, each of which should have 'author', 'title', 'article_id', 'topic', 'created_at','votes' and 'comment_count' properties", () => {
+    test.only("status:200 responds with an array of article objects, each of which should have 'author', 'title', 'article_id', 'topic', 'created_at','votes' and 'comment_count' properties", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.length).toBe(3);
+          expect(body.articles.length).toBe(12);
           body.articles.forEach((article) => {
             expect(article).toEqual(
               expect.objectContaining({
@@ -141,9 +173,9 @@ describe("app", () => {
                 title: expect.any(String),
                 article_id: expect.any(Number),
                 topic: expect.any(String),
-                created_at: expect.any(Date),
+                created_at: expect.any(String),
                 votes: expect.any(Number),
-                comment_count: expect.any(Number),
+                comment_counts: expect.any(Number),
               })
             );
           });
