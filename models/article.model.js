@@ -1,34 +1,41 @@
 const db = require("../db/connection");
 
-exports.selectArticleById = (article_id) => {
+exports.selectArticleById = async (article_id) => {
+  if (typeof article_id !== "number") {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid ID",
+    });
+  }
   const query = "SELECT * FROM articles WHERE article_id = $1;";
-  return db.query(query, [article_id]).then(({ rows }) => {
-    if (!rows[0]) {
-      return Promise.reject({
-        status: 404,
-        msg: `article does not exist`,
-      });
-    }
-    return rows[0];
-  });
+  const { rows } = await db.query(query, [article_id]);
+  if (rows.length === 0) {
+    return Promise.reject({
+      status: 404,
+      msg: "article does not exist",
+    });
+  }
+  return rows[0];
 };
 
 exports.updateArticleById = async (article_id, updatedArticle) => {
-  const { votes } = updatedArticle;
-  console.log(updatedArticle, "<<<<<<<<<<<<<<<<<<<in model");
-  const query1 = "SELECT * FROM articles WHERE article_id = $1;";
-  const query2 =
-    "UPDATE articles SET votes = $2 WHERE article_id = $1 RETURNING *;";
-  const promise1 = db.query(query1, [article_id]).then(({ rows }) => rows[0]);
-
-  const promise2 = db
-    .query(query2, [article_id, votes])
-    .then(({ rows }) => rows[0]);
-
-  const promises = [promise1, promise2];
-  const [article1, article2] = await Promise.all(promises);
-  article1.votes += article2.votes;
-  return article1;
+  const { inc_votes } = updatedArticle;
+  console.log(updatedArticle, "<<<<<<<<<<<<<<<<<updatedArticle");
+  //const query1 = "SELECT * FROM articles WHERE article_id = $1;";
+  const query =
+    "UPDATE articles SET votes = votes + $2 WHERE article_id = $1 RETURNING *;";
+  const { rows } = await db.query(query, [article_id, inc_votes]);
+  if (
+    Object.keys(updatedArticle).length === 0 ||
+    updatedArticle.hasOwnProperty("inc_votes") === false ||
+    typeof updatedArticle.inc_votes !== "number"
+  ) {
+    return Promise.reject({
+      status: 400,
+      msg: "missing required fields",
+    });
+  }
+  return rows[0];
 };
 // exports.selectArticles = async () => {
 //   const query = `

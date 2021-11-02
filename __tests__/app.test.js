@@ -102,7 +102,7 @@ describe("app", () => {
           });
         });
     });
-    test.only("GET status:404 responds with an error message", () => {
+    test("GET status:404 responds with an error message", () => {
       return request(app)
         .get("/api/articles/9999")
         .expect(404)
@@ -110,8 +110,16 @@ describe("app", () => {
           expect(body.msg).toBe("article does not exist");
         });
     });
+    test.only("GET status:400 responds with an error message", () => {
+      return request(app)
+        .get("/api/articles/not-an-id")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid ID");
+        });
+    });
     test("PATCH, status:200 responds with the updated article", () => {
-      const voteUpdates = { votes: -27 };
+      const voteUpdates = { inc_votes: -27 };
       return request(app)
         .patch("/api/articles/5")
         .send(voteUpdates)
@@ -126,6 +134,26 @@ describe("app", () => {
             created_at: "2020-08-03T13:14:00.000Z",
             votes: -27,
           });
+        });
+    });
+    test("PATCH status:400 responds with an error message", () => {
+      const voteUpdates = { rating: 9 };
+      return request(app)
+        .patch("/api/articles/5")
+        .send(voteUpdates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("missing required fields");
+        });
+    });
+    test("PATCH status:400 responds with an error message", () => {
+      const voteUpdates = {};
+      return request(app)
+        .patch("/api/articles/5")
+        .send(voteUpdates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("missing required fields");
         });
     });
   });
