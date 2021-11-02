@@ -69,27 +69,6 @@ describe("app", () => {
             votes: 0,
             comment_counts: 2,
           });
-
-          //   expect(body.article).toEqual(
-          //     expect.objectContaining({
-          //       author: expect.any(String),
-          //       title: expect.any(String),
-          //       article_id: expect.any(Number),
-          //       topic: expect.any(String),
-          //       created_at: expect.any(Date),
-          //       votes: expect.any(Number),
-          //       comment_count: expect.any(Number),
-          //     })
-          //   );
-
-          //   expect(body.article).toEqual({
-          //     article_id: 5,
-          //     title: "UNCOVERED: catspiracy to bring down democracy",
-          //     topic: "cats",
-          //     author: "rogersop",
-          //     created_at: new Date(1596464040000),
-          //     votes: 0,
-          //   });
         });
     });
     test("GET status:404 responds with an error message", () => {
@@ -160,7 +139,7 @@ describe("app", () => {
     });
   });
   describe("GET /api/articles", () => {
-    test.only("status:200 responds with an array of article objects, each of which should have 'author', 'title', 'article_id', 'topic', 'created_at','votes' and 'comment_count' properties", () => {
+    test("status:200 responds with an array of article objects, each of which should have 'author', 'title', 'article_id', 'topic', 'created_at','votes' and 'comment_count' properties", () => {
       return request(app)
         .get("/api/articles")
         .expect(200)
@@ -187,6 +166,22 @@ describe("app", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("path not found");
+        });
+    });
+    test.only("sort_by status:200 accepts sort_by query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles[0].article_id).toBe(1);
+        });
+    });
+    test.only("sort_by status:400 responds with error message for invalid sort_by query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=invalid_query")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid input");
         });
     });
   });

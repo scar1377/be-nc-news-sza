@@ -56,7 +56,7 @@ exports.updateArticleById = async (article_id, updatedArticle) => {
 
   return rows[0];
 };
-exports.selectArticles = async () => {
+exports.selectArticles = async (sort_by = "created_at") => {
   const query = `
   SELECT 
   articles.author,
@@ -70,9 +70,23 @@ exports.selectArticles = async () => {
   LEFT JOIN comments
   ON articles.article_id = comments.article_id
   GROUP BY articles.article_id
+  ORDER BY ${sort_by} ASC
   `;
-
   const { rows } = await db.query(query);
+  if (
+    ![
+      "author",
+      "titile",
+      "article_id",
+      "topic",
+      "created_at",
+      "votes",
+      "comment_counts",
+    ].includes(sort_by)
+  ) {
+    return Promise.reject({ status: 400, msg: "Invalid sort_by query" });
+  }
+
   const newRows = convertValuesToNumber(rows, "comment_counts");
   //   console.log(rows, "<<<<<<<<<<<<<<<<<<<<<rows");
   //   console.log(typeof rows[0].comment_counts, "<<<<<<<<<<<<<<<<<<<<type");
