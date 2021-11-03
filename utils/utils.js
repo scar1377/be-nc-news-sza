@@ -5,3 +5,10 @@ exports.convertValuesToNumber = (objArr, keyName) => {
   });
   return newObjArr;
 };
+
+exports.renameKey = (obj, keyToChange, newKey) => {
+  const newObj = { ...obj };
+  newObj[newKey] = newObj[keyToChange];
+  delete newObj[keyToChange];
+  return newObj;
+};

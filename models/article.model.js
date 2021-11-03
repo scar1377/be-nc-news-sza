@@ -33,9 +33,6 @@ exports.selectArticleById = async (article_id) => {
 
 exports.updateArticleById = async (article_id, updatedArticle) => {
   const { inc_votes } = updatedArticle;
-  const query =
-    "UPDATE articles SET votes = votes + $2 WHERE article_id = $1 RETURNING *;";
-  const { rows } = await db.query(query, [article_id, inc_votes]);
   const arr = Object.keys(updatedArticle);
   if (arr.length === 0) {
     return Promise.reject({
@@ -53,6 +50,9 @@ exports.updateArticleById = async (article_id, updatedArticle) => {
       msg: "incorrect type",
     });
   }
+  const query =
+    "UPDATE articles SET votes = votes + $2 WHERE article_id = $1 RETURNING *;";
+  const { rows } = await db.query(query, [article_id, inc_votes]);
 
   return rows[0];
 };

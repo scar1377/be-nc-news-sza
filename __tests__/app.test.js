@@ -239,7 +239,7 @@ describe("app", () => {
         });
     });
   });
-  describe("GET /api.articles/:article_id/comments", () => {
+  describe("GET /api/articles/:article_id/comments", () => {
     test("GET status:200 responds with an array of comments for the given article_id ", () => {
       return request(app)
         .get("/api/articles/5/comments")
@@ -265,6 +265,76 @@ describe("app", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("article or comments not found");
+        });
+    });
+    test("GET status:400 responds with an error message", () => {
+      return request(app)
+        .get("/api/articles/not-an-id/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid input");
+        });
+    });
+  });
+  describe("POST /api/articles/:article_id/comments", () => {
+    test("POST status:201 responds with the posted comments", () => {
+      const newComment = {
+        username: "7731racs",
+        body: "Yesterday was the other day!",
+      };
+      //const newDate = JSON.stringify(new Date());
+      return request(app)
+        .post("/api/articles/5/comments")
+        .send(newComment)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.comment).toEqual({
+            comment_id: 19,
+            body: "Yesterday was the other day!",
+            votes: 0,
+            author: "7731racs",
+            article_id: 5,
+            created_at: expect.any(String),
+          });
+        });
+    });
+    test("POST status:400 responds with an error message", () => {
+      const newComment = {
+        author: "7731racs",
+        review: "Yesterday was the other day!",
+      };
+      return request(app)
+        .post("/api/articles/5/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("incorrect type");
+        });
+    });
+    test("POST status:400 responds with an error message", () => {
+      const newComment = {
+        author: "7731racs",
+      };
+      return request(app)
+        .post("/api/articles/5/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("missing required fields");
+        });
+    });
+    test("POST status:400 responds with an error message", () => {
+      const newComment = {
+        author: "7731racs",
+        review: "Yesterday was the other day!",
+        pets: 0,
+      };
+      return request(app)
+        .post("/api/articles/5/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("incorrect format");
         });
     });
   });
