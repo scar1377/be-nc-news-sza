@@ -1,6 +1,5 @@
 exports.handlePsqlError = (err, req, res, next) => {
   if (err.code) {
-    console.log(err, "<<<<<<<<<<<<<<<<<in psqlerrorhandler");
     res.status(400).send({ msg: "Invalid input" });
   } else {
     next(err);
