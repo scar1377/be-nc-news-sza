@@ -12,7 +12,7 @@ exports.selectArticleById = async (article_id) => {
   articles.topic, 
   articles.created_at, 
   articles.votes,
-  COUNT(comments.comment_id) AS comment_counts
+  COUNT(comments.comment_id)::INT AS comment_counts
   FROM articles
   LEFT JOIN comments
   ON articles.article_id = comments.article_id
@@ -26,9 +26,9 @@ exports.selectArticleById = async (article_id) => {
       msg: "article does not exist",
     });
   }
-  const newRows = convertValuesToNumber(rows, "comment_counts");
+  //   const newRows = convertValuesToNumber(rows, "comment_counts");
   // console.log(newRows[0], "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<rows[0]");
-  return newRows[0];
+  return rows[0];
 };
 
 exports.updateArticleById = async (article_id, updatedArticle) => {
@@ -56,27 +56,15 @@ exports.updateArticleById = async (article_id, updatedArticle) => {
 
   return rows[0];
 };
-exports.selectArticles = async (sort_by = "created_at") => {
-  const query = `
-  SELECT 
-  articles.author,
-  articles.title, 
-  articles.article_id, 
-  articles.topic, 
-  articles.created_at, 
-  articles.votes,
-  COUNT(comments.comment_id) AS comment_counts
-  FROM articles
-  LEFT JOIN comments
-  ON articles.article_id = comments.article_id
-  GROUP BY articles.article_id
-  ORDER BY ${sort_by} ASC
-  `;
-  const { rows } = await db.query(query);
+exports.selectArticles = async (
+  sort_by = "created_at",
+  order = "desc",
+  topic
+) => {
   if (
     ![
       "author",
-      "titile",
+      "title",
       "article_id",
       "topic",
       "created_at",
@@ -87,10 +75,38 @@ exports.selectArticles = async (sort_by = "created_at") => {
     return Promise.reject({ status: 400, msg: "Invalid sort_by query" });
   }
 
-  const newRows = convertValuesToNumber(rows, "comment_counts");
-  //   console.log(rows, "<<<<<<<<<<<<<<<<<<<<<rows");
-  //   console.log(typeof rows[0].comment_counts, "<<<<<<<<<<<<<<<<<<<<type");
-  return newRows;
-  //   LEFT JOIN users
-  //   ON articles.author = users.username
+  if (!["asc", "desc"].includes(order)) {
+    return Promise.reject({ status: 400, msg: "Invalid order query" });
+  }
+
+  if (!["cats", "mitch", "paper"].includes(topic) && topic !== undefined) {
+    return Promise.reject({ status: 400, msg: "Topic does not exist" });
+  }
+  const queryParams = [];
+  let queryStr = `
+  SELECT 
+  articles.author,
+  articles.title, 
+  articles.article_id, 
+  articles.topic, 
+  articles.created_at, 
+  articles.votes,
+  COUNT(comments.comment_id)::INT AS comment_counts
+  FROM articles
+  LEFT JOIN comments
+  ON articles.article_id = comments.article_id
+  `;
+  if (topic) {
+    queryStr += `WHERE articles.topic = $1 `;
+    queryParams.push(topic);
+  }
+  if (sort_by) {
+    queryStr += `GROUP BY articles.article_id
+      ORDER BY ${sort_by}`;
+  }
+  if (order) {
+    queryStr += ` ${order}`;
+  }
+  const { rows } = await db.query(queryStr, queryParams);
+  return rows;
 };

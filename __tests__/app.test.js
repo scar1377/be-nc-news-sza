@@ -168,20 +168,74 @@ describe("app", () => {
           expect(body.msg).toBe("path not found");
         });
     });
-    test.only("sort_by status:200 accepts sort_by query", () => {
+    test("sort_by status:200 accepts sort_by author query", () => {
       return request(app)
-        .get("/api/articles?sort_by=article_id")
+        .get("/api/articles?sort_by=author")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles[0].article_id).toBe(1);
+          expect(body.articles).toBeSortedBy("author", {
+            descending: true,
+          });
         });
     });
-    test.only("sort_by status:400 responds with error message for invalid sort_by query", () => {
+    test("sort_by status:200 accepts sort_by comment_counts query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_counts")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("comment_counts", {
+            descending: true,
+          });
+        });
+    });
+    test("sort_by status:200 accepts sort_by created_at query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=created_at")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
+    test("sort_by status:400 responds with error message for invalid sort_by query", () => {
       return request(app)
         .get("/api/articles?sort_by=invalid_query")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Invalid input");
+          expect(body.msg).toBe("Invalid sort_by query");
+        });
+    });
+    test("order status:200 accepts order query", () => {
+      return request(app)
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles[0].article_id).toBe(7);
+        });
+    });
+    test("order status:400 responds with error message for invalid sort_by query", () => {
+      return request(app)
+        .get("/api/articles?order=invalid_query")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid order query");
+        });
+    });
+    test("topic status:200 accepts topic query", () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).toBe(1);
+        });
+    });
+    test("topic status:400 responds with error message for invalid topic", () => {
+      return request(app)
+        .get("/api/articles?topic=no-such-a-topic")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Topic does not exist");
         });
     });
   });
