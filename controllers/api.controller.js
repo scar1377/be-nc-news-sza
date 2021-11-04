@@ -1,20 +1,11 @@
 const fs = require("fs").promises;
-//const { getJsonDescriptions } = require("../models/api.model.js");
+const { getJsonDescriptions } = require("../models/api.model.js");
 
 exports.getEndpoints = (req, res, next) => {
-  console.log("<<<<<<<<<<<<<<<<<in api controller");
-  const jsonFilePromise = fs.readFile("./endpoints.json", "utf-8");
-  jsonFilePromise
+  console.log("<<<<<<<<<<<<<<<<<<in api controller");
+  getJsonDescriptions()
     .then((descriptions) => {
-      const parsedDescriptions = JSON.parse(descriptions);
-      console.log(
-        parsedDescriptions,
-        "<<<<<<<<<<<<<<<<<<<<descriptions in controller"
-      );
-      res.status(200).send({ descriptions: parsedDescriptions });
+      res.status(200).send({ descriptions });
     })
-    .catch((err) => {
-      console.log(err);
-      next(err);
-    });
+    .catch(next);
 };

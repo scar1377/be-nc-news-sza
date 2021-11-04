@@ -1,5 +1,10 @@
-const { readFile } = require("fs");
+const { readFile } = require("fs").promises;
 
-exports.getJsonDescriptions = () => {
-  const jsonFilePromise = readFile("../endpoints.json", "utf-8");
+exports.getJsonDescriptions = async () => {
+  console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<in api model");
+  const rows = await readFile("./endpoints.json", "utf-8");
+
+  const parsedInfo = JSON.parse(rows);
+
+  return parsedInfo;
 };
