@@ -44,7 +44,10 @@ exports.updateArticleById = async (article_id, updatedArticle) => {
       status: 400,
       msg: "multiply updates",
     });
-  } else if (arr.includes("inc_votes") === false) {
+  } else if (
+    !arr.includes("inc_votes") ||
+    typeof updatedArticle.inc_votes !== "number"
+  ) {
     return Promise.reject({
       status: 400,
       msg: "incorrect type",

@@ -9,12 +9,48 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("app", () => {
-  test("status:200 responds with succeeded message", () => {
+  // test("status:200 responds with succeeded message", () => {
+  //   return request(app)
+  //     .get("/api")
+  //     .expect(200)
+  //     .then(({ body }) => {
+  //       expect(body.msg).toBe("Welcome to NC-News!");
+  //     });
+  // });
+
+  test("status:200 responds with the descriptions of all the endpoints", () => {
     return request(app)
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toBe("Welcome to NC-News!");
+        expect(body.descriptions).toEqual({
+          "GET /api": {
+            description:
+              "serves up a json representation of all the available endpoints of the api",
+          },
+          "GET /api/topics": {
+            description: "serves an array of all topics",
+            queries: [],
+            exampleResponse: {
+              topics: [{ slug: "football", description: "Footie!" }],
+            },
+          },
+          "GET /api/articles": {
+            description: "serves an array of all topics",
+            queries: ["author", "topic", "sort_by", "order"],
+            exampleResponse: {
+              articles: [
+                {
+                  title: "Seafood substitutions are increasing",
+                  topic: "cooking",
+                  author: "weegembump",
+                  body: "Text from the article..",
+                  created_at: 1527695953341,
+                },
+              ],
+            },
+          },
+        });
       });
   });
   test("status:404 responds with an error message", () => {
@@ -109,6 +145,16 @@ describe("app", () => {
     });
     test("PATCH status:400 responds with an error message", () => {
       const voteUpdates = { rating: 9 };
+      return request(app)
+        .patch("/api/articles/5")
+        .send(voteUpdates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("incorrect type");
+        });
+    });
+    test("PATCH status:400 responds with an error message", () => {
+      const voteUpdates = { inc_votes: "Woohoo" };
       return request(app)
         .patch("/api/articles/5")
         .send(voteUpdates)

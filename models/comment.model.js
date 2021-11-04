@@ -20,7 +20,6 @@ exports.selectCommentsByArticleId = async (article_id) => {
       msg: "article or comments not found",
     });
   }
-  console.log(rows);
   return rows;
 };
 
@@ -38,8 +37,10 @@ exports.addCommentByArticleId = async (article_id, newComment) => {
       msg: "incorrect format",
     });
   } else if (
-    arr.includes("username") === false ||
-    arr.includes("body") === false
+    !arr.includes("username") ||
+    typeof newComment.username !== "string" ||
+    typeof newComment.body !== "string" ||
+    !arr.includes("body")
   ) {
     return Promise.reject({
       status: 400,
