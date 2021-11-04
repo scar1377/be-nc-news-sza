@@ -338,4 +338,17 @@ describe("app", () => {
         });
     });
   });
+  describe("DELETE /api/comments/:comment_id", () => {
+    test("DELETE status:204 responds with no content", () => {
+      return request(app).delete("/api/comments/1").expect(204);
+    });
+    test("DELETE status:404 responds with an error message", () => {
+      return request(app)
+        .delete("/api/comments/99999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("comment does not exist");
+        });
+    });
+  });
 });

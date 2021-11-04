@@ -1,3 +1,4 @@
+const { response } = require("../app");
 const db = require("../db/connection");
 const { renameKey } = require("../utils/utils.js");
 const { updateArticleById } = require("./article.model");
@@ -19,6 +20,7 @@ exports.selectCommentsByArticleId = async (article_id) => {
       msg: "article or comments not found",
     });
   }
+  console.log(rows);
   return rows;
 };
 
@@ -58,19 +60,17 @@ exports.addCommentByArticleId = async (article_id, newComment) => {
   return rows[0];
 };
 
-// return db
-//   .query("INSERT INTO users (username) VALUES ($1)", [username])
-//   .then(() => {
-//     const query = `
-// INSERT INTO comments (
-//   article_id,
-//   author,
-//   body)
-//   VALUES ($1,$2,$3)
-//   RETURNING *
-// `;
-//     return db.query(query, [article_id, username, body]).then(({ rows }) => {
-//       return rows[0];
-//     });
-//   });
-//};
+exports.dropCommentById = async (comment_id) => {
+  const { rows, rowCount } = await db.query(
+    "DELETE FROM comments WHERE comment_id = $1;",
+    [comment_id]
+  );
+  if (rowCount === 0) {
+    return Promise.reject({
+      status: 404,
+      msg: "comment does not exist",
+    });
+  }
+
+  return rows[0];
+};
