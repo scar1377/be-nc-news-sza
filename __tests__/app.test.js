@@ -9,15 +9,6 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("app", () => {
-  // test("status:200 responds with succeeded message", () => {
-  //   return request(app)
-  //     .get("/api")
-  //     .expect(200)
-  //     .then(({ body }) => {
-  //       expect(body.msg).toBe("Welcome to NC-News!");
-  //     });
-  // });
-
   test("status:200 responds with the descriptions of all the endpoints", () => {
     return request(app)
       .get("/api")

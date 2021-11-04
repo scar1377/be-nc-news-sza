@@ -4,8 +4,6 @@ const {
   updateArticleById,
 } = require("../models/article.model");
 
-const { selectCommentsByArticleId } = require("../models/comment.model.js");
-
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
   selectArticleById(article_id)
