@@ -18,19 +18,20 @@ exports.selectArticleById = async (article_id) => {
 
 exports.updateArticleById = async (article_id, updatedArticle) => {
   const { inc_votes } = updatedArticle;
-  const arr = Object.keys(updatedArticle);
-  if (arr.length === 0) {
+  const keyArr = Object.keys(updatedArticle);
+
+  if (keyArr.length === 0) {
     return Promise.reject({
       status: 400,
       msg: "missing required fields",
     });
-  } else if (arr.length !== 1) {
+  } else if (keyArr.length !== 1) {
     return Promise.reject({
       status: 400,
       msg: "multiply updates",
     });
   } else if (
-    !arr.includes("inc_votes") ||
+    !keyArr.includes("inc_votes") ||
     typeof updatedArticle.inc_votes !== "number"
   ) {
     return Promise.reject({
@@ -41,7 +42,12 @@ exports.updateArticleById = async (article_id, updatedArticle) => {
   const query =
     "UPDATE articles SET votes = votes + $2 WHERE article_id = $1 RETURNING *;";
   const { rows } = await db.query(query, [article_id, inc_votes]);
-  return rows[0];
+  if (rows.length === 0) {
+    return Promise.reject({
+      status: 400,
+      msg: "article does not exist",
+    });
+  } else return rows[0];
 };
 
 exports.selectArticles = async (
@@ -67,7 +73,6 @@ exports.selectArticles = async (
     return Promise.reject({ status: 400, msg: "Invalid order query" });
   }
 
-  //getting all the topics from the current db by invoking selectTopics from topic.model
   const topicsObjArray = selectTopics();
   const topicsArray = (await topicsObjArray).map((obj) => obj.slug);
 

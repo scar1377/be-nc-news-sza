@@ -150,7 +150,28 @@ describe("app", () => {
           expect(body.msg).toBe("multiply updates");
         });
     });
+    test("PATCH status:400 responds with an error message", () => {
+      const voteUpdates = { inc_votes: -27 };
+      return request(app)
+        .patch("/api/articles/9999")
+        .send(voteUpdates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("article does not exist");
+        });
+    });
+    test("PATCH status:400 responds with an error message", () => {
+      const voteUpdates = { inc_votes: -27 };
+      return request(app)
+        .patch("/api/articles/not-an-id")
+        .send(voteUpdates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid input");
+        });
+    });
   });
+
   describe("GET /api/articles", () => {
     test("status:200 responds with an array of article objects, each of which should have 'author', 'title', 'article_id', 'topic', 'created_at','votes' and 'comment_count' properties", () => {
       return request(app)
@@ -211,6 +232,16 @@ describe("app", () => {
           });
         });
     });
+    test("sort_by status:200 accepts sort_by default value query", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
     test("sort_by status:400 responds with error message for invalid sort_by query", () => {
       return request(app)
         .get("/api/articles?sort_by=invalid_query")
@@ -224,7 +255,19 @@ describe("app", () => {
         .get("/api/articles?order=asc")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles[0].article_id).toBe(7);
+          expect(body.articles).toBeSortedBy("created_at", {
+            ascending: true,
+          });
+        });
+    });
+    test("order status:200 accepts default order query", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
         });
     });
     test("order status:400 responds with error message for invalid sort_by query", () => {
