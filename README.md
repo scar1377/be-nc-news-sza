@@ -5,7 +5,7 @@
 <p align="right"><font size=1>*The picture is from internet</font></p>
 ## Introduction
 
-This API provides data for Raddish-style news website. It is the back-end built using `Node-postgres` for interacting with the `PSQL` database. It includes multiple endpoints tested with full TDD.
+This API provides data for Reddit-style news website. It is the back-end built using `Node-postgres` for interacting with the `PSQL` database. It includes multiple endpoints tested with full TDD.
 
 **To visit the hosted site please visit https://szanews.herokuapp.com/api**
 
@@ -46,7 +46,7 @@ npm i
 
 ### **Connecting to different PostgreSQL databases**
 
-In order to use `node-postgres` to connect to different databases, we need to multiple .env files. Duplicate the `.env-example` and rename them to `.env.test` and `.env.development`.
+In order to use `node-postgres` to connect to different databases, we need to duplicate the .env file twice. Duplicate the `.env-example` once and rename it to `.env.test` and duplicate the original file again and rename it `.env.development`.
 
 in `.env.development` please insert
 
@@ -60,7 +60,7 @@ in `.env.test` please insert
 PGDATABASE=test_database_name
 ```
 
-**Now we can seed local database**
+**Now we can seed the local databases**
 
 please run the following CLI
 
