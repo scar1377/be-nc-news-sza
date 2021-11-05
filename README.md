@@ -1,6 +1,6 @@
 # Northcoders News - SZA API
 
-<img src="https://jcookltd.co.uk/wp-content/uploads/2021/07/news-1.jpg"></a>
+<img src="https://victorine.ch/wordpress/wp-content/uploads/2014/03/news.jpg"></a>
 
 <p align="right"><font size=1>*The picture is from internet</font></p>
 ## Introduction
