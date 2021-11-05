@@ -30,17 +30,13 @@ exports.selectCommentsByArticleId = async (article_id) => {
 };
 
 exports.addCommentByArticleId = async (article_id, newComment) => {
-  const { username, body } = newComment;
+  const { username, body, votes } = newComment;
+
   const keyArr = Object.keys(newComment);
-  if (keyArr.length <= 1) {
+  if (keyArr.length < 2) {
     return Promise.reject({
       status: 400,
       msg: "missing required fields",
-    });
-  } else if (keyArr.length !== 2) {
-    return Promise.reject({
-      status: 400,
-      msg: "incorrect format",
     });
   } else if (
     !keyArr.includes("username") ||
@@ -53,6 +49,15 @@ exports.addCommentByArticleId = async (article_id, newComment) => {
       msg: "incorrect type",
     });
   }
+  const usernameResult = await db.query("SELECT * FROM users");
+  const usernameArr = usernameResult.rows.map((user) => user.username);
+  if (!usernameArr.includes(username)) {
+    return Promise.reject({
+      status: 404,
+      msg: "user does not exist",
+    });
+  }
+
   const articleResult = await db.query(
     `SELECT * FROM articles WHERE article_id = $1`,
     [article_id]
@@ -67,11 +72,12 @@ exports.addCommentByArticleId = async (article_id, newComment) => {
   INSERT INTO comments (
       article_id,
       author, 
-      body)
+      body
+      )
       VALUES ($1,$2,$3)
       RETURNING *
     `;
-  await db.query("INSERT INTO users (username) VALUES ($1)", [username]);
+
   const { rows } = await db.query(queryStr, [article_id, username, body]);
 
   return rows[0];

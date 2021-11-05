@@ -351,7 +351,7 @@ describe("app", () => {
   describe("POST /api/articles/:article_id/comments", () => {
     test("POST status:201 responds with the posted comments", () => {
       const newComment = {
-        username: "7731racs",
+        username: "butter_bridge",
         body: "Yesterday was the other day!",
       };
       return request(app)
@@ -363,15 +363,50 @@ describe("app", () => {
             comment_id: 19,
             body: "Yesterday was the other day!",
             votes: 0,
-            author: "7731racs",
+            author: "butter_bridge",
             article_id: 5,
             created_at: expect.any(String),
           });
         });
     });
+    test("POST status:201 responds with the posted comments", () => {
+      const newComment = {
+        username: "butter_bridge",
+        body: "Yesterday was the other day!",
+        rating: 6,
+        remark: "from 7731racs",
+      };
+      return request(app)
+        .post("/api/articles/5/comments")
+        .send(newComment)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.comment).toEqual({
+            comment_id: 19,
+            body: "Yesterday was the other day!",
+            votes: 0,
+            author: "butter_bridge",
+            article_id: 5,
+            created_at: expect.any(String),
+          });
+        });
+    });
+    test("POST status:404 responds with error message", () => {
+      const newComment = {
+        username: "7731racs",
+        body: "Yesterday was the other day!",
+      };
+      return request(app)
+        .post("/api/articles/5/comments")
+        .send(newComment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("user does not exist");
+        });
+    });
     test("POST status:400 responds with an error message", () => {
       const newComment = {
-        author: "7731racs",
+        author: "butter_bridge",
         review: "Yesterday was the other day!",
       };
       return request(app)
@@ -396,21 +431,7 @@ describe("app", () => {
     });
     test("POST status:400 responds with an error message", () => {
       const newComment = {
-        author: "7731racs",
-        review: "Yesterday was the other day!",
-        pets: 0,
-      };
-      return request(app)
-        .post("/api/articles/5/comments")
-        .send(newComment)
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("incorrect format");
-        });
-    });
-    test("POST status:400 responds with an error message", () => {
-      const newComment = {
-        username: "7731racs",
+        username: "butter_bridge",
         body: "Yesterday was the other day!",
       };
       return request(app)
@@ -423,7 +444,7 @@ describe("app", () => {
     });
     test("POST status:404 responds with an error message", () => {
       const newComment = {
-        username: "7731racs",
+        username: "butter_bridge",
         body: "Yesterday was the other day!",
       };
       return request(app)
