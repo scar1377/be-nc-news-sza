@@ -478,4 +478,32 @@ describe("app", () => {
         });
     });
   });
+
+  describe("GET /api/users", () => {
+    test("status:200 responds with an array of user objects, each of which should have 'username', 'name' and 'avatar_url' properties", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.users.length).toBe(4);
+          body.users.forEach((user) => {
+            expect(user).toEqual(
+              expect.objectContaining({
+                username: expect.any(String),
+                avatar_url: expect.any(String),
+                name: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+    test("status:404 responds with an error message", () => {
+      return request(app)
+        .get("/api/user")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("path not found");
+        });
+    });
+  });
 });
