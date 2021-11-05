@@ -3,7 +3,6 @@ const {
   selectArticleByIdQueryStr,
   selectArticlesQueryStr,
 } = require("../utils/utils.js");
-const { selectTopics } = require("./topic.model.js");
 
 exports.selectArticleById = async (article_id) => {
   const { rows } = await db.query(selectArticleByIdQueryStr, [article_id]);
@@ -73,10 +72,10 @@ exports.selectArticles = async (
     return Promise.reject({ status: 400, msg: "Invalid order query" });
   }
 
-  const topicsObjArray = selectTopics();
-  const topicsArray = (await topicsObjArray).map((obj) => obj.slug);
+  const topicsResult = await db.query("SELECT topics.slug FROM topics");
+  const topicsArr = topicsResult.rows.map((topic) => topic.slug);
 
-  if (!topicsArray.includes(topic) && topic !== undefined) {
+  if (!topicsArr.includes(topic) && topic !== undefined) {
     return Promise.reject({ status: 404, msg: "Topic does not exist" });
   }
   const queryParams = [];

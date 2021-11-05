@@ -373,6 +373,7 @@ describe("app", () => {
       const newComment = {
         username: "butter_bridge",
         body: "Yesterday was the other day!",
+        votes: 5,
         rating: 6,
         remark: "from 7731racs",
       };
@@ -384,7 +385,7 @@ describe("app", () => {
           expect(body.comment).toEqual({
             comment_id: 19,
             body: "Yesterday was the other day!",
-            votes: 0,
+            votes: 5,
             author: "butter_bridge",
             article_id: 5,
             created_at: expect.any(String),
@@ -419,7 +420,7 @@ describe("app", () => {
     });
     test("POST status:400 responds with an error message", () => {
       const newComment = {
-        author: "7731racs",
+        author: "butter_bridge",
       };
       return request(app)
         .post("/api/articles/5/comments")
@@ -466,6 +467,14 @@ describe("app", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("comment does not exist");
+        });
+    });
+    test("DELETE status:400 responds with an error message", () => {
+      return request(app)
+        .delete("/api/comments/not-an-id")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid input");
         });
     });
   });
