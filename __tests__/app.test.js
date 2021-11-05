@@ -303,6 +303,7 @@ describe("app", () => {
         });
     });
   });
+
   describe("GET /api/articles/:article_id/comments", () => {
     test("GET status:200 responds with an array of comments for the given article_id ", () => {
       return request(app)
@@ -503,6 +504,37 @@ describe("app", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("path not found");
+        });
+    });
+  });
+  describe("GET /api/users/:username", () => {
+    test("GET, status:200 responds with a single matching user", () => {
+      return request(app)
+        .get("/api/users/butter_bridge")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.user).toEqual({
+            username: "butter_bridge",
+            name: "jonny",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          });
+        });
+    });
+    test("GET status:404 responds with an error message", () => {
+      return request(app)
+        .get("/api/users/9999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("user does not exist");
+        });
+    });
+    test.skip("GET status:400 responds with an error message", () => {
+      return request(app)
+        .get("/api/users/not-an-id")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid input");
         });
     });
   });
