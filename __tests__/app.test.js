@@ -286,10 +286,18 @@ describe("app", () => {
           expect(body.articles.length).toBe(1);
         });
     });
-    test("topic status:400 responds with error message for invalid topic", () => {
+    test("topic status:200 responds with error message for non-article-related", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.msg).toBe("No articles related to this topic");
+        });
+    });
+    test("topic status:404 responds with error message for invalid topic", () => {
       return request(app)
         .get("/api/articles?topic=no-such-a-topic")
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("Topic does not exist");
         });
@@ -315,12 +323,20 @@ describe("app", () => {
           });
         });
     });
+    test("GET status:200 responds with an error message", () => {
+      return request(app)
+        .get("/api/articles/7/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments).toEqual([]);
+        });
+    });
     test("GET status:404 responds with an error message", () => {
       return request(app)
         .get("/api/articles/9999/comments")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("article or comments not found");
+          expect(body.msg).toBe("article not found");
         });
     });
     test("GET status:400 responds with an error message", () => {
@@ -338,7 +354,6 @@ describe("app", () => {
         username: "7731racs",
         body: "Yesterday was the other day!",
       };
-      //const newDate = JSON.stringify(new Date());
       return request(app)
         .post("/api/articles/5/comments")
         .send(newComment)
@@ -391,6 +406,32 @@ describe("app", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("incorrect format");
+        });
+    });
+    test("POST status:400 responds with an error message", () => {
+      const newComment = {
+        username: "7731racs",
+        body: "Yesterday was the other day!",
+      };
+      return request(app)
+        .post("/api/articles/not-an-id/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid input");
+        });
+    });
+    test("POST status:404 responds with an error message", () => {
+      const newComment = {
+        username: "7731racs",
+        body: "Yesterday was the other day!",
+      };
+      return request(app)
+        .post("/api/articles/9999/comments")
+        .send(newComment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("article not found");
         });
     });
   });

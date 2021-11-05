@@ -77,7 +77,7 @@ exports.selectArticles = async (
   const topicsArray = (await topicsObjArray).map((obj) => obj.slug);
 
   if (!topicsArray.includes(topic) && topic !== undefined) {
-    return Promise.reject({ status: 400, msg: "Topic does not exist" });
+    return Promise.reject({ status: 404, msg: "Topic does not exist" });
   }
   const queryParams = [];
   let queryStr = selectArticlesQueryStr;
@@ -93,5 +93,10 @@ exports.selectArticles = async (
     queryStr += ` ${order}`;
   }
   const { rows } = await db.query(queryStr, queryParams);
-  return rows;
+  if (rows.length === 0) {
+    return Promise.reject({
+      status: 200,
+      msg: "No articles related to this topic",
+    });
+  } else return rows;
 };

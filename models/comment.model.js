@@ -1,5 +1,7 @@
 const { response } = require("../app");
 const db = require("../db/connection");
+const articles = require("../db/data/test-data/articles");
+const articlesRouter = require("../routes/articles-router");
 const { renameKey } = require("../utils/utils.js");
 const { updateArticleById } = require("./article.model");
 
@@ -14,10 +16,14 @@ exports.selectCommentsByArticleId = async (article_id) => {
   FROM comments WHERE article_id = $1
   `;
   const { rows } = await db.query(query, [article_id]);
-  if (rows.length === 0) {
+  const articleResult = await db.query(
+    `SELECT * FROM articles WHERE article_id = $1`,
+    [article_id]
+  );
+  if (articleResult.rows.length === 0 && rows.length === 0) {
     return Promise.reject({
       status: 404,
-      msg: "article or comments not found",
+      msg: "article not found",
     });
   }
   return rows;
@@ -25,26 +31,36 @@ exports.selectCommentsByArticleId = async (article_id) => {
 
 exports.addCommentByArticleId = async (article_id, newComment) => {
   const { username, body } = newComment;
-  const arr = Object.keys(newComment);
-  if (arr.length <= 1) {
+  const keyArr = Object.keys(newComment);
+  if (keyArr.length <= 1) {
     return Promise.reject({
       status: 400,
       msg: "missing required fields",
     });
-  } else if (arr.length !== 2) {
+  } else if (keyArr.length !== 2) {
     return Promise.reject({
       status: 400,
       msg: "incorrect format",
     });
   } else if (
-    !arr.includes("username") ||
+    !keyArr.includes("username") ||
     typeof newComment.username !== "string" ||
     typeof newComment.body !== "string" ||
-    !arr.includes("body")
+    !keyArr.includes("body")
   ) {
     return Promise.reject({
       status: 400,
       msg: "incorrect type",
+    });
+  }
+  const articleResult = await db.query(
+    `SELECT * FROM articles WHERE article_id = $1`,
+    [article_id]
+  );
+  if (articleResult.rows.length === 0) {
+    return Promise.reject({
+      status: 404,
+      msg: "article not found",
     });
   }
   const queryStr = `
