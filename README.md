@@ -46,15 +46,15 @@ npm i
 
 ### **Connecting to different PostgreSQL databases**
 
-In order to use `node-postgres` to connect to different databases, we need to duplicate the .env file twice. Duplicate the `.env-example` once and rename it to `.env.test` and duplicate the original file again and rename it `.env.development`.
+In order to use `node-postgres` to connect to different databases, we need two .env files. Duplicate the `.env-example` and rename both of them to `.env.test` and `.env.development`.
 
-in `.env.development` please insert
+in `.env.development`
 
 ```
-PGDATABASE=test_database_name
+PGDATABASE=development_database_name
 ```
 
-in `.env.test` please insert
+in `.env.test`
 
 ```
 PGDATABASE=test_database_name
