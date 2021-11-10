@@ -529,14 +529,6 @@ describe("app", () => {
           expect(body.msg).toBe("user does not exist");
         });
     });
-    test.skip("GET status:400 responds with an error message", () => {
-      return request(app)
-        .get("/api/users/not-an-id")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Invalid input");
-        });
-    });
   });
 
   describe("PATCH /api/comments/:comment_id", () => {
