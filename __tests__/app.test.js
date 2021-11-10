@@ -538,4 +538,84 @@ describe("app", () => {
         });
     });
   });
+
+  describe("PATCH /api/comments/:comment_id", () => {
+    test("PATCH, status:200 responds with the updated comment", () => {
+      const voteUpdates = { inc_votes: 19 };
+      return request(app)
+        .patch("/api/comments/5")
+        .send(voteUpdates)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment).toEqual({
+            comment_id: 5,
+            author: "icellusedkars",
+            article_id: 1,
+            votes: 19,
+            body: "I hate streaming noses",
+            created_at: expect.any(String),
+          });
+        });
+    });
+    test("PATCH status:400 responds with an error message", () => {
+      const voteUpdates = { rating: 9 };
+      return request(app)
+        .patch("/api/comments/19")
+        .send(voteUpdates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("incorrect type");
+        });
+    });
+    test("PATCH status:400 responds with an error message", () => {
+      const voteUpdates = { inc_votes: "Woohoo" };
+      return request(app)
+        .patch("/api/comments/19")
+        .send(voteUpdates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("incorrect type");
+        });
+    });
+    test("PATCH status:400 responds with an error message", () => {
+      const voteUpdates = {};
+      return request(app)
+        .patch("/api/comments/19")
+        .send(voteUpdates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("missing required fields");
+        });
+    });
+    test("PATCH status:400 responds with an error message", () => {
+      const voteUpdates = { inc_votes: 1, name: "Mitch" };
+      return request(app)
+        .patch("/api/comments/19")
+        .send(voteUpdates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("multiply updates");
+        });
+    });
+    test("PATCH status:400 responds with an error message", () => {
+      const voteUpdates = { inc_votes: 17 };
+      return request(app)
+        .patch("/api/comments/9999")
+        .send(voteUpdates)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("comment does not exist");
+        });
+    });
+    test("PATCH status:400 responds with an error message", () => {
+      const voteUpdates = { inc_votes: 17 };
+      return request(app)
+        .patch("/api/comments/not-an-id")
+        .send(voteUpdates)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid input");
+        });
+    });
+  });
 });

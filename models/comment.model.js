@@ -113,3 +113,37 @@ exports.dropCommentById = async (comment_id) => {
 
   return rows[0];
 };
+
+exports.updateCommentById = async (comment_id, updatedComment) => {
+  const { inc_votes } = updatedComment;
+  const keyArr = Object.keys(updatedComment);
+
+  if (keyArr.length === 0) {
+    return Promise.reject({
+      status: 400,
+      msg: "missing required fields",
+    });
+  } else if (keyArr.length !== 1) {
+    return Promise.reject({
+      status: 400,
+      msg: "multiply updates",
+    });
+  } else if (
+    !keyArr.includes("inc_votes") ||
+    typeof updatedComment.inc_votes !== "number"
+  ) {
+    return Promise.reject({
+      status: 400,
+      msg: "incorrect type",
+    });
+  }
+  const query =
+    "UPDATE comments SET votes = votes + $2 WHERE comment_id = $1 RETURNING *;";
+  const { rows } = await db.query(query, [comment_id, inc_votes]);
+  if (rows.length === 0) {
+    return Promise.reject({
+      status: 404,
+      msg: "comment does not exist",
+    });
+  } else return rows[0];
+};
