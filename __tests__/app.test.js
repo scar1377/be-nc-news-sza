@@ -56,6 +56,28 @@ describe("app", () => {
     });
   });
 
+  describe("GET /api/topics/:slug", () => {
+    test("status:200 responds with an array of topic objects, each of which should have 'slug' and 'description' properties", () => {
+      return request(app)
+        .get("/api/topics/cats")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.topic).toEqual({
+            slug: "cats",
+            description: "Not dogs",
+          });
+        });
+    });
+    test("status:404 responds with an error message", () => {
+      return request(app)
+        .get("/api/topics/cat")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("topic does not exist");
+        });
+    });
+  });
+
   describe("GET /api/articles/:article_id", () => {
     test("GET, status:200 responds with a single matching article", () => {
       return request(app)

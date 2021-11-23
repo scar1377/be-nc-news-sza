@@ -9,6 +9,13 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "GET /api/topics/:topic": {
+    "description": "serves an array of all topics",
+    "queries": [],
+    "exampleResponse": {
+      "topics": [{ "slug": "football", "description": "Footie!" }]
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all topics",
     "queries": ["author", "topic", "sort_by", "order"],
